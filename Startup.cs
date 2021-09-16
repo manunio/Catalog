@@ -43,7 +43,14 @@ namespace Catalog
 
             services.AddSingleton<IItemsRepository, MonogoDbItemsRepository>();
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                // breaking change in from core 3.1
+                // prevents dotnet from removing Async from method name,
+                // ex GetItemAsync -> GetItem
+                // options.SuppressAsyncSuffixInActionNames = false;
+                // https://youtu.be/ZFPMNSPzuTY?t=1302
+            });
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Catalog", Version = "v1"}); });
         }
 
