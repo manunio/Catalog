@@ -22,7 +22,7 @@ namespace Catalog.Repositories
 
         public Item GetItem(Guid id)
         {
-            return _items.Where(item => item.Id == id).SingleOrDefault();
+            return _items.SingleOrDefault(item => item.Id == id);
         }
 
         public void CreateItem(Item item)

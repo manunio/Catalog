@@ -14,7 +14,6 @@ namespace Catalog.Controllers
     [Route("items")]
     public class ItemsController : ControllerBase
     {
-
         private readonly IItemsRepository _repository;
 
         public ItemsController(IItemsRepository repository)
@@ -52,12 +51,13 @@ namespace Catalog.Controllers
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
                 Price = itemDto.Price,
-                CreatedDate = DateTimeOffset.UtcNow
+                CreatedDate = DateTimeOffset.UtcNow,
+                UpdatedDate = DateTimeOffset.UtcNow
             };
 
             _repository.CreateItem(item);
 
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto());
+            return CreatedAtAction(nameof(GetItem), new {id = item.Id}, item.AsDto());
         }
 
         // PUT /items/{id}
@@ -71,10 +71,12 @@ namespace Catalog.Controllers
                 return NotFound();
             }
 
-            Item updateItem = existingItem with   // `with-expression` takes a record, the "existingitem"
-            {                                     // and creates a copy of it, 
-                Name = itemDto.Name,              // with these properties. 
-                Price = itemDto.Price
+            var updateItem = existingItem with // `with-expression` takes a record, the "existingitem"
+            {
+                // and creates a copy of it, 
+                Name = itemDto.Name, // with these properties. 
+                Price = itemDto.Price,
+                UpdatedDate = DateTimeOffset.UtcNow
             };
 
             _repository.UpdateItem(updateItem);
@@ -86,7 +88,6 @@ namespace Catalog.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteItem(Guid id)
         {
-
             var existingItem = _repository.GetItem(id);
 
             if (existingItem is null)
@@ -97,8 +98,6 @@ namespace Catalog.Controllers
             _repository.DeleteItem(id);
 
             return NoContent();
-
         }
-
     }
 }
