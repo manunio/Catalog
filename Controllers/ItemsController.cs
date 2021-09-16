@@ -36,7 +36,7 @@ namespace Catalog.Controllers
         }
 
         // GET /items/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<ItemDto>> GetItemAsync(Guid id)
         {
             var item = await _repository.GetItemAsync(id);
@@ -74,7 +74,7 @@ namespace Catalog.Controllers
         }
 
         // PUT /items/{id}
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<ActionResult> UpdateItem(Guid id, UpdateItemDto itemDto)
         {
             var existingItem = await _repository.GetItemAsync(id);
@@ -84,10 +84,12 @@ namespace Catalog.Controllers
                 return NotFound();
             }
 
-            var updateItem = existingItem with // `with-expression` takes a record, the "existingitem"
+            // `with-expression` takes a record, the "existingitem"
+            // and creates a copy of it,
+            // with these properties.
+            var updateItem = existingItem with
             {
-                // and creates a copy of it, 
-                Name = itemDto.Name, // with these properties. 
+                Name = itemDto.Name,
                 Price = itemDto.Price,
                 UpdatedDate = DateTimeOffset.UtcNow
             };
@@ -98,7 +100,7 @@ namespace Catalog.Controllers
         }
 
         // DELETE /items/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteItem(Guid id)
         {
             var existingItem = await _repository.GetItemAsync(id);

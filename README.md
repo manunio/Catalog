@@ -23,5 +23,20 @@ Ctrl + Shift + B
 #### MongoDB docker run
 
 ```bash
-docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db mongo
+docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=<passowrd> mongo
 ```
+
+<br>
+
+#### DotNet Secret Management
+
+- Initialize dotnet 5 secret management.
+  ```bash
+  dotnet user-secrets init
+  ```
+
+- Add mongo pasword property as secret.
+    - MongoDbSettings:Password (follows appsettings.json convention)
+      ```bash
+      sudo dotnet user-secrets set MongoDbSettings:Password <password>
+      ```
