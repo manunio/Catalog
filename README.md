@@ -55,6 +55,12 @@ docker run -d --rm --name mongo \
 --network=<network name> mongo
 ```
 
+- For change password / reset container don't forget to remove volume, using below cmd before creating container.
+
+```bash
+dotnet volume rm mongodbdata
+```
+
 <br>
 
 #### Docker: build & tag image

@@ -91,6 +91,7 @@ namespace Catalog
 
                 // Custom health checks for api application and
                 // its related services like mongodb.
+                // in short is the REST API ready to be used ?
                 endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("ready"),
@@ -115,6 +116,7 @@ namespace Catalog
                 });
 
                 // Custom health checks for api application only.
+                // in short is the REST API alive ?
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
                     Predicate = _ => false

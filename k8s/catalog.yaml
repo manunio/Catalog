@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-deployment
+  labels:
+    app: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      name: catalog
+      labels:
+        app: catalog
+    spec:
+      containers:
+        - name: catalog
+          image: maxxnair/catalog:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m" # 500m = 0.5 CPU = half CPU
+          ports:
+            - containerPort: 80
+          env:
+            - name: MongoDbSettings__Host # similar to MongoDbSettings:Host
+              value: mongodb-service
+            - name: MongoDbSettings__Password
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-secrets
+                  key: mongodb-password
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 80
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  selector:
+    app: catalog
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
