@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,7 +76,10 @@ namespace Catalog
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog v1"));
             }
 
-            app.UseHttpsRedirection();
+            if (env.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
@@ -87,6 +89,8 @@ namespace Catalog
             {
                 endpoints.MapControllers();
 
+                // Custom health checks for api application and
+                // its related services like mongodb.
                 endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
                     Predicate = check => check.Tags.Contains("ready"),
@@ -110,6 +114,7 @@ namespace Catalog
                     }
                 });
 
+                // Custom health checks for api application only.
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
                     Predicate = _ => false

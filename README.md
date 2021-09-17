@@ -22,9 +22,14 @@ Ctrl + Shift + B
 
 #### MongoDB docker run
 
-```bash
-docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=<passowrd> mongo
-```
+- Without network
+   ```bash
+      docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=<username> -e MONGO_INITDB_ROOT_PASSWORD=<passowrd> mongo
+   ```
+- With network
+   ```bash
+      docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=<username> -e MONGO_INITDB_ROOT_PASSWORD=<passowrd> --network=<network name> mongo
+   ```
 
 <br>
 
@@ -40,3 +45,36 @@ docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_
       ```bash
       sudo dotnet user-secrets set MongoDbSettings:Password <password>
       ```
+
+<br>
+
+#### Docker: build & tag image
+
+```bash
+docker build -t maxxnair/catalog:v1 .         
+```
+
+<br>
+
+#### Docker: create a local network
+
+```bash
+docker network create catalogdemo         
+```
+
+#### Docker: view existing networks
+
+```bash
+docker network ls
+```
+
+#### Docker: run Catalog run image
+
+```bash
+ docker run -it --rm -p 8080:80 -e MongoDbSettings:Host=mongo -e MongoDbSettings:Password=<password> --network=catalogdemo maxxnair/catalog:v1
+```
+
+#### Docker: push image to docker hub
+```bash
+docker push maxxnair/catalog:v1
+```
