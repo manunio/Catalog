@@ -4,6 +4,7 @@ using Catalog.Api.Controllers;
 using Catalog.Api.Dtos;
 using Catalog.Api.Entities;
 using Catalog.Api.Repositories;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -22,12 +23,10 @@ namespace Catalog.UnitTests
         public async Task GetItemAsync_WithUnExistingItem_ReturnsNotFound()
         {
             // Arrange
-
             // whenever controller invokes GetItemAsync with any Guid,
             // which moq is going to provide. It have to return a null value.
             _repositoryStub.Setup(repo => repo.GetItemAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((Item) null);
-
             //.Object passes the object of type instead of moq
             var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
 
@@ -51,12 +50,11 @@ namespace Catalog.UnitTests
             var result = await controller.GetItemAsync(Guid.NewGuid());
 
             //Assert
-            Assert.IsType<ItemDto>(result.Value); //Value property has the dto.
-            var dto = ((ActionResult<ItemDto>) result).Value;
-            Assert.Equal(expectedItem.Id, dto.Id);
-            Assert.Equal(expectedItem.Name, dto.Name);
-            Assert.Equal(expectedItem.Name, dto.Name);
-            
+            // compares properties of both object
+            // options.ComparingByMembers<Item>() is used for handling,
+            // conversion between record types.
+            result.Value.Should().BeEquivalentTo(expectedItem, options =>
+                options.ComparingByMembers<Item>());
         }
 
         private Item CreateRandomItem()
