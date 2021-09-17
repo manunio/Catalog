@@ -1,9 +1,9 @@
-
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Catalog.Dtos
+namespace Catalog.Api.Dtos
 {
-    public record UpdateItemDto
+    public record CreateItemDto
     {
         [Required]
         public string Name { get; init; }
