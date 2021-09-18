@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Catalog.Api.Controllers;
-using Catalog.Api.Dtos;
 using Catalog.Api.Entities;
 using Catalog.Api.Repositories;
 using FluentAssertions;
