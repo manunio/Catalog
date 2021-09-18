@@ -8,7 +8,7 @@
 dotnet user-secrets init
 ```
 
-- Add mongo pasword property as secret.
+- Add mongo password property as secret.
     - MongoDbSettings:Password (follows appsettings.json convention)
       ```bash
       sudo dotnet user-secrets set MongoDbSettings:Password <password>

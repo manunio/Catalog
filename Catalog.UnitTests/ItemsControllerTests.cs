@@ -56,6 +56,23 @@ namespace Catalog.UnitTests
                 options.ComparingByMembers<Item>());
         }
 
+        [Fact]
+        public async Task GetItemsAsync_WithExistingItem_ReturnsAllItems()
+        {
+            //Arrange
+            var expectedItems = new[] {CreateRandomItem(), CreateRandomItem(), CreateRandomItem()};
+            _repositoryStub.Setup(repo => repo.GetItemsAsync())
+                .ReturnsAsync(expectedItems);
+            var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
+
+            //Act
+            var actualItems = await controller.GetItemsAsync();
+
+            //Assert
+            actualItems.Should().BeEquivalentTo(expectedItems,
+                options => options.ComparingByMembers<Item>());
+        }
+
         private Item CreateRandomItem()
         {
             return new()
