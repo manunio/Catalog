@@ -91,7 +91,10 @@ namespace Catalog.UnitTests
             //Assert
             var createdItem = (result.Result as CreatedAtActionResult)?.Value as ItemDto;
 
+            // options.ComparingByMembers<Item>() is used for handling,
+            // conversion between record types.
             // .ExcludingMissingMembers() looks at the properties that are common between two objects. 
+
             itemToCreate.Should().BeEquivalentTo(createdItem,
                 options => options.ComparingByMembers<ItemDto>()
                     .ExcludingMissingMembers()
