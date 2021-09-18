@@ -25,7 +25,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ItemDto>> GetItemsAsync()
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(string name = null)
         {
             // await is wrap into parenthesis,
             // or else it Select can't be used.
@@ -34,9 +34,17 @@ namespace Catalog.Api.Controllers
             var items = (await _repository.GetItemsAsync())
                 .Select(item => item.AsDto());
 
-            var itemsAsync = items.ToList();
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                items = items.Where(item => item.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
 
-            _logger.LogInformation($"{DateTime.UtcNow:hh:mm:ss}: Retrieved {itemsAsync.Count} items");
+            var itemsAsync = items.ToList();
+            _logger.LogInformation(
+                "{CurrentTime}: Retrieved {ItemsCount} items",
+                DateTime.UtcNow.ToString("hh:mm::ss"),
+                itemsAsync.Count
+            );
 
             return itemsAsync;
         }
