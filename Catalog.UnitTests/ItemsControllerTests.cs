@@ -82,7 +82,7 @@ namespace Catalog.UnitTests
         public async Task CreateItemAsync_WithItemToCreate_ReturnsCreatedItem()
         {
             //Arrange
-            var itemToCreate = new CreateItemDto()
+            var itemToCreate = new CreateItemDto
             {
                 Name = Guid.NewGuid().ToString(),
                 Price = _rand.Next(1000)
@@ -106,6 +106,29 @@ namespace Catalog.UnitTests
                 DateTimeOffset.UtcNow,
                 TimeSpan.FromMilliseconds(1000)
             );
+        }
+
+        [Fact]
+        public async Task UpdateItemAsync_WithExistingItem_ReturnsNoContent()
+        {
+            //Arrange
+            var existingItem = CreateRandomItem();
+            _repositoryStub.Setup(repo => repo.GetItemAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(existingItem);
+
+            var itemId = existingItem.Id;
+            var itemToUpdate = new UpdateItemDto
+            {
+                Name = Guid.NewGuid().ToString(),
+                Price = existingItem.Price + 3
+            };
+            var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
+
+            //Act
+            var result = await controller.UpdateItemAsync(itemId, itemToUpdate);
+
+            //Assert
+            result.Should().BeOfType<NoContentResult>();
         }
 
         private Item CreateRandomItem()
