@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Catalog.Api.Dtos;
 using Catalog.Api.Entities;
 using Catalog.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -64,6 +63,7 @@ namespace Catalog.Api.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
+                Description = itemDto.Description,
                 Price = itemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow,
                 UpdatedDate = DateTimeOffset.UtcNow
@@ -91,17 +91,10 @@ namespace Catalog.Api.Controllers
                 return NotFound();
             }
 
-            // `with-expression` takes a record, the "existingitem"
-            // and creates a copy of it,
-            // with these properties.
-            var updateItem = existingItem with
-            {
-                Name = itemDto.Name,
-                Price = itemDto.Price,
-                UpdatedDate = DateTimeOffset.UtcNow
-            };
+            existingItem.Name = itemDto.Name;
+            existingItem.Price = itemDto.Price;
 
-            await _repository.UpdateItemAsync(updateItem);
+            await _repository.UpdateItemAsync(existingItem);
 
             return NoContent();
         }
