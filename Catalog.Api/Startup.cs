@@ -33,16 +33,13 @@ namespace Catalog.Api
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+
             var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
-            services.AddSingleton<IMongoClient>(serviceProvider =>
-            {
-                // Password is set in appsettings.json as it's not retrieving properly
-                // Using hardcoded password for now as this a demo project
-                // Note don't do this in Production.
-
-                return new MongoClient(mongoDbSettings.ConnectionString);
-            });
+            // password retrieval from user-secrets working again.
+            // changing owner of ~/.microsoft from root:root to maxx:maxx
+            // fixed it. for ex: sudo chown -R maxx:maxx ~/.microsoft
+            services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoDbSettings.ConnectionString));
 
             services.AddSingleton<IItemsRepository, MonogoDbItemsRepository>();
 
@@ -55,7 +52,8 @@ namespace Catalog.Api
                 // https://youtu.be/ZFPMNSPzuTY?t=1302
             });
 
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Catalog.Api", Version = "v1"}); });
+            services.AddSwaggerGen(
+                c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Catalog.Api", Version = "v1"}); });
 
             services.AddHealthChecks()
                 .AddMongoDb(
