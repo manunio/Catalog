@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Api.Controllers;
 using Catalog.Api.Entities;
@@ -60,7 +61,10 @@ namespace Catalog.UnitTests
         public async Task GetItemsAsync_WithExistingItem_ReturnsAllItems()
         {
             //Arrange
-            var expectedItems = new[] {CreateRandomItem(), CreateRandomItem(), CreateRandomItem()};
+            var expectedItems = Enumerable.Range(0, 3)
+                .Select(_ => CreateRandomItem())
+                .ToArray();
+            
             _repositoryStub.Setup(repo => repo.GetItemsAsync())
                 .ReturnsAsync(expectedItems);
             var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
