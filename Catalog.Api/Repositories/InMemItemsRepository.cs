@@ -26,7 +26,7 @@ namespace Catalog.Api.Repositories
 
         public async Task<Item> GetItemAsync(Guid id)
         {
-            var item = _items.SingleOrDefault(item => item.Id == id);
+            var item = _items.SingleOrDefault(i => i.Id == id);
             return await Task.FromResult(item);
         }
 

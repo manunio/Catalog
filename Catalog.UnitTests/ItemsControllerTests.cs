@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Api.Controllers;
+using Catalog.Api.Dtos;
 using Catalog.Api.Entities;
 using Catalog.Api.Repositories;
 using FluentAssertions;
@@ -64,7 +65,7 @@ namespace Catalog.UnitTests
             var expectedItems = Enumerable.Range(0, 3)
                 .Select(_ => CreateRandomItem())
                 .ToArray();
-            
+
             _repositoryStub.Setup(repo => repo.GetItemsAsync())
                 .ReturnsAsync(expectedItems);
             var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
@@ -75,6 +76,36 @@ namespace Catalog.UnitTests
             //Assert
             actualItems.Should().BeEquivalentTo(expectedItems,
                 options => options.ComparingByMembers<Item>());
+        }
+
+        [Fact]
+        public async Task CreateItemAsync_WithItemToCreate_ReturnsCreatedItem()
+        {
+            //Arrange
+            var itemToCreate = new CreateItemDto()
+            {
+                Name = Guid.NewGuid().ToString(),
+                Price = _rand.Next(1000)
+            };
+            var controller = new ItemsController(_repositoryStub.Object, _loggerStub.Object);
+
+            //Act
+            var result = await controller.CreateItemAsync(itemToCreate);
+
+            //Assert
+            var createdItem = (result.Result as CreatedAtActionResult)?.Value as ItemDto;
+
+            // .ExcludingMissingMembers() looks at the properties that are common between two objects. 
+            itemToCreate.Should().BeEquivalentTo(createdItem,
+                options => options.ComparingByMembers<ItemDto>()
+                    .ExcludingMissingMembers()
+            );
+
+            createdItem?.Id.Should().NotBeEmpty();
+            createdItem?.CreatedDate.Should().BeCloseTo(
+                DateTimeOffset.UtcNow,
+                TimeSpan.FromMilliseconds(1000)
+            );
         }
 
         private Item CreateRandomItem()
